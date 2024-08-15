@@ -5,17 +5,18 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 //Form giriş tiplerini tanımlarız.
 type FormInput = {
-  email: string;
+  identifier: string;
   password: string;
   name?: string;
 };
 
 //Form Doğrulama şemasını tanımlarız.
 const loginSchema = yup.object().shape({
-  email: yup
+  identifier: yup
     .string()
     .email("Geçerli bir email girin")
     .required("Email gerekli"),
@@ -47,11 +48,21 @@ export default function AuthForm() {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<FormInput> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<FormInput> = async (data) => {
+    try {
+        const response = await axios.post('http://localhost:1337/api/auth/local',data)
+        if(response.status ===200){
+          console.log(response.data)
+          localStorage.setItem('token',response.data.jwt)
+        }
+    }catch (err) {
+      console.log(err)
+    }
+  }
 
   useEffect(() => {
     reset({
-      email: "",
+      identifier: "",
       password: "",
       name: "",
     });
@@ -95,6 +106,7 @@ export default function AuthForm() {
                   <Controller
                     control={control}
                     name="name"
+                    defaultValue=""
                     render={({ field }) => (
                       <input
                         {...field}
@@ -119,21 +131,23 @@ export default function AuthForm() {
               </label>
               <Controller
                 control={control}
-                name="email"
+                name="identifier"
+                defaultValue=""
+                
                 render={({ field }) => (
                   <input
                     {...field}
                     id="email"
                     className={`block w-full p-3 border ${
-                      errors.email ? "border-red-500" : "border-gray-300"
+                      errors.identifier ? "border-red-500" : "border-gray-300"
                     } rounded-lg mb-1`}
                     placeholder="john@gmail.com"
                   />
                 )}
               />
-              {errors.email && (
+              {errors.identifier && (
                 <p className="text-red-500 text-sm mb-4">
-                  {errors.email.message}
+                  {errors.identifier.message}
                 </p>
               )}
 
@@ -143,6 +157,7 @@ export default function AuthForm() {
               <Controller
                 control={control}
                 name="password"
+                defaultValue=""
                 render={({ field }) => (
                   <input
                     {...field}
