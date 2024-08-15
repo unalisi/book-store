@@ -18,7 +18,7 @@ export default function Home() {
         />
       </div>
       <div className="flex flex-col gap-4 mx-auto px-12 py-4 items-center justify-center ">
-        <Link href="/login">
+        <Link href="/auth">
           <p className="text-white text-center bg-orange w-48 md:w-96 py-3 md:py-5 rounded-lg">
             Login
           </p>
